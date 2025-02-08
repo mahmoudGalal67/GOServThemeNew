@@ -4,7 +4,7 @@ import {
   updateItemQuantity,
   removeItemFromCart,
   fetchCartItemms,
-  emptyCartItemms
+  emptyCartItemms,
 } from "../Redux/CartSlice";
 import { FiCloudLightning, FiMinus } from "react-icons/fi";
 import { IoAdd } from "react-icons/io5";
@@ -25,6 +25,8 @@ function Cart() {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const { user } = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(["usertoken"]);
+
   const dispatch = useDispatch();
   const products = useSelector((state) => state.cart.items);
 
@@ -43,7 +45,7 @@ function Cart() {
           },
         });
         const userCart = data.find((item) => item.status == "بانتظار المراجعه");
-        console.log(data)
+        console.log(data);
         setcartId(userCart.order_id);
         const cartProducts = await Promise.all(
           userCart.shopping_carddto.map(async (cart) => {
@@ -83,9 +85,6 @@ function Cart() {
 
   // to gerate a randome rounded number between 1 to 10;
   var theRandomNumber = Math.floor(Math.random() * 1000) + 1;
-
-  // const [cookies, setCookie] = useCookies(["usertoken"]);
-  const [cookies, setCookie] = useCookies(["usertoken"]);
 
   const totalAmount = products?.reduce(
     (total, product) => total + product.price * product.quantity,
@@ -231,8 +230,6 @@ function Cart() {
       toast.error("Failed to process the payment. Please try again.");
     }
   };
-
-
 
   return (
     <>

@@ -55,7 +55,12 @@ function NavBar({ design, handleSearch }) {
               </span>
               <div className="img-wrapper flex position-relative">
                 <img src="/cart.svg" alt="" />
-                <div className="count">{products?.length || 0}</div>
+                <div className="count">
+                  {products.reduce(
+                    (sum, product) => sum + product.quantity,
+                    0
+                  ) || 0}
+                </div>
               </div>
             </Link>
           </div>
