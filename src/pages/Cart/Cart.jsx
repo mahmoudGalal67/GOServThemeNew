@@ -4,7 +4,7 @@ import {
   updateItemQuantity,
   removeItemFromCart,
   fetchCartItemms,
-  emptyCartItemms
+  emptyCartItemms,
 } from "../Redux/CartSlice";
 import { FiCloudLightning, FiMinus } from "react-icons/fi";
 import { IoAdd } from "react-icons/io5";
@@ -31,8 +31,12 @@ function Cart() {
   const [loading, setLoading] = useState(false);
 
   const [cartId, setcartId] = useState(null);
+  const [cookies, setCookie] = useCookies(["usertoken"]);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     try {
       setLoading(true);
       const getCartItems = async () => {
@@ -43,7 +47,7 @@ function Cart() {
           },
         });
         const userCart = data.find((item) => item.status == "بانتظار المراجعه");
-        console.log(data)
+
         setcartId(userCart.order_id);
         const cartProducts = await Promise.all(
           userCart.shopping_carddto.map(async (cart) => {
@@ -83,9 +87,6 @@ function Cart() {
 
   // to gerate a randome rounded number between 1 to 10;
   var theRandomNumber = Math.floor(Math.random() * 1000) + 1;
-
-  // const [cookies, setCookie] = useCookies(["usertoken"]);
-  const [cookies, setCookie] = useCookies(["usertoken"]);
 
   const totalAmount = products?.reduce(
     (total, product) => total + product.price * product.quantity,
@@ -215,8 +216,8 @@ function Cart() {
       });
       setLoading(false);
       // window.location.href = data.shorten_url;
-      window.open(data.shorten_url, "_blank");
       dispatch(emptyCartItemms());
+      window.open(data.shorten_url, "_blank");
       // Handle success
       // toast.success("Your order has been sent successfully");
 
@@ -232,8 +233,6 @@ function Cart() {
     }
   };
 
-
-
   return (
     <>
       <Info />
@@ -242,7 +241,7 @@ function Cart() {
         <div className="container">
           <div className="row">
             <div
-              className="border-1 col-md-4 col-sm-12 border-1 bg-white rounded rounded-2 mt-4 card h-75"
+              className="border-1 col-md-4 col-sm-12  bg-white rounded rounded-2 mt-4 card h-75"
               dir="rtl"
             >
               <p className="mx-1 py-4 fw-medium ms-auto">ملخص الطلب </p>
@@ -273,7 +272,7 @@ function Cart() {
               <button
                 className="rounded-3 mb-3 p-2 confirm"
                 onClick={handlePayment}
-                disabled={loading}
+                disabled={loading || !totalAmount}
               >
                 {loading ? "Loading ..." : "اتمام الطلب"}
               </button>

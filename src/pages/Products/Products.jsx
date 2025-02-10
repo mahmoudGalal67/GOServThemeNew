@@ -48,16 +48,30 @@ function Products() {
 
     products.forEach((category) => {
       category.brandsDto.forEach((brand) => {
-        brandsArray.push(brand);
+        brandsArray.push({
+          brand_id: brand.brand_id,
+          brand_name: brand.brand_name,
+          brand_lenght: brand.productDto.length,
+        });
       });
     });
-    setbrands(brandsArray);
+    brandsArray.filter(
+      (brand, index, self) =>
+        index === self.findIndex((b) => b.brand_name === brand.brand_name)
+    );
+    setbrands(
+      brandsArray.filter(
+        (brand, index, self) =>
+          index === self.findIndex((b) => b.brand_name === brand.brand_name)
+      )
+    );
   };
   //  Offcanvas
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   //  Offcanvas
+  console.log(brands);
 
   // Layout
   const [layout, setLayout] = useState("row");
@@ -80,21 +94,23 @@ function Products() {
       return;
     }
     try {
+      const productData = {
+        product_id: product.product_id,
+        product_name: product.product_name_ar,
+        price: product.price,
+        admin_id: searchParams.get("id"),
+        photoes: product.photoes,
+        quantity: 1,
+      };
       const { data } = await request({
         url: `/api/Clients/add_orders?uid=${
           user.userId
         }&admin_id=${searchParams.get("id")}`,
         method: "POST",
-        data: {
-          product_id: product.product_id,
-          product_name: product.product_name_ar,
-          price: product.price,
-          admin_id: searchParams.get("id"),
-          quantity: 1,
-        },
+        data: productData,
         headers: { Authorization: `Bearer ${cookies?.usertoken}` },
       });
-      dispatch(addItemToCart({ ...product, ...data[0] }));
+      dispatch(addItemToCart(productData));
     } catch (err) {
       console.log(err);
     }
@@ -456,7 +472,7 @@ function Products() {
               <Accordion.Body>
                 {brands.map((brand) => (
                   <div className="item">
-                    <span>{`(${brand.productDto.length})`}</span>
+                    <span>{`(${brand.brand_lenght})`}</span>
                     <div>
                       {" "}
                       <label htmlFor="">{brand.brand_name}</label>

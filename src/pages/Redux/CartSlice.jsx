@@ -12,9 +12,11 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     emptyCartItemms: (state) => {
-      state={ items: []}
+      console.log(state.items);
+      state.items = [];
     },
     fetchCartItemms: (state, action) => {
+      console.log(state.items);
       state.items = action.payload;
     },
     addItemToCart: (state, action) => {
@@ -65,6 +67,6 @@ export const {
   removeItemFromCart,
   updateItemQuantity,
   fetchCartItemms,
-  emptyCartItemms
+  emptyCartItemms,
 } = cartSlice.actions;
 export default cartSlice.reducer;

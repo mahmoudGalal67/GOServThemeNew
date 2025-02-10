@@ -35,21 +35,24 @@ function Product({ product, brand, category, layout }) {
       return;
     }
     try {
+      const productData = {
+        product_id: product.product_id,
+        product_name: product.product_name_ar,
+        price: product.price,
+        admin_id: searchParams.get("id"),
+        photoes: product.photoes,
+        quantity: 1,
+      };
       const { data } = await request({
         url: `/api/Clients/add_orders?uid=${
           user.userId
         }&admin_id=${searchParams.get("id")}`,
         method: "POST",
-        data: {
-          product_id: product.product_id,
-          product_name: product.product_name_ar,
-          price: product.price,
-          admin_id: searchParams.get("id"),
-          quantity: 1,
-        },
+        data: productData,
+
         headers: { Authorization: `Bearer ${cookies?.usertoken}` },
       });
-      dispatch(addItemToCart({ ...product, ...data[0] }));
+      dispatch(addItemToCart(productData));
     } catch (err) {
       console.log(err);
     }
