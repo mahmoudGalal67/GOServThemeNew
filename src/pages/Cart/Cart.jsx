@@ -25,13 +25,14 @@ function Cart() {
   let [searchParams, setSearchParams] = useSearchParams();
 
   const { user } = useContext(AuthContext);
+  const [cookies, setCookie] = useCookies(["usertoken"]);
+
   const dispatch = useDispatch();
   const products = useSelector((state) => state.cart.items);
 
   const [loading, setLoading] = useState(false);
 
   const [cartId, setcartId] = useState(null);
-  const [cookies, setCookie] = useCookies(["usertoken"]);
 
   useEffect(() => {
     if (!user) {
@@ -47,7 +48,6 @@ function Cart() {
           },
         });
         const userCart = data.find((item) => item.status == "بانتظار المراجعه");
-
         setcartId(userCart.order_id);
         const cartProducts = await Promise.all(
           userCart.shopping_carddto.map(async (cart) => {
