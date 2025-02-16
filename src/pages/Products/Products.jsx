@@ -26,11 +26,12 @@ import { useCookies } from "react-cookie";
 import { AuthContext } from "../../components/context/Auth";
 
 const colors = [
-  { hex_code: "gray", name: "white" },
+  { hex_code: "white", name: "white" },
   { hex_code: "black", name: "black" },
   { hex_code: "red", name: "red" },
+  { hex_code: "green", name: "green" },
+  { hex_code: "yellow", name: "yellow" },
   { hex_code: "blue", name: "blue" },
-  { hex_code: "brown", name: "brown" },
 ];
 
 function Products() {
@@ -138,7 +139,7 @@ function Products() {
         const { data } = await request({
           url: `/api/Product_details/Getall?userid=${searchParams.get("id")}`,
         });
-        setProducts(data.slice(0, 8));
+        setProducts(data);
         setcategories([
           ...new Set(
             data.map((product) => ({
@@ -246,7 +247,7 @@ function Products() {
           // Check color filter
           if (color_name.length > 0) {
             const colorMatch = product.product_colors.some((color) =>
-              color_name.includes(color.color_name)
+              color_name.includes(color.hex_code)
             );
             if (!colorMatch) return false;
           }
@@ -380,9 +381,9 @@ function Products() {
                                 {" "}
                                 <div className="title">{brand.brand_name}</div>
                                 <Link
-                                  to={`/productDetails/${searchParams.get(
-                                    "id"
-                                  )}/${product.product_id}`}
+                                  to={`/productDetails/${
+                                    product.product_id
+                                  }?id=${searchParams.get("id")}`}
                                 >
                                   <p className="desc">
                                     {truncateTitle(product.product_name_ar, 2)}

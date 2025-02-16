@@ -44,6 +44,7 @@ function MyVerticallyCenteredModal(props) {
     } catch (err) {
       setLoading(false);
       setErr(err.response.data.message);
+      toast.error("User Not Found ");
     }
   };
   const handleRsgister = async (e) => {
@@ -76,6 +77,7 @@ function MyVerticallyCenteredModal(props) {
     } catch (err) {
       setLoading(false);
       setErr(err.response.data.message);
+      toast.error("User Already Exist");
     }
   };
   return (
