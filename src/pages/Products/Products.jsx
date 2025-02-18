@@ -41,6 +41,10 @@ function Products() {
   const [cookies, setCookie] = useCookies(["user"]);
 
   const [Products, setProducts] = useState([]);
+  const [page, setpage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 2;
+
   const [categories, setcategories] = useState([]);
   const [brands, setbrands] = useState([]);
   // Extract all brands from all categories
@@ -48,11 +52,11 @@ function Products() {
     const brandsArray = [];
 
     products.forEach((category) => {
-      category.brandsDto.forEach((brand) => {
+      category.brandsDto1.forEach((brand) => {
         brandsArray.push({
           brand_id: brand.brand_id,
           brand_name: brand.brand_name,
-          brand_lenght: brand.productDto.length,
+          brand_lenght: brand.productDto1.length,
         });
       });
     });
@@ -72,7 +76,6 @@ function Products() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   //  Offcanvas
-  console.log(brands);
 
   // Layout
   const [layout, setLayout] = useState("row");
@@ -137,24 +140,28 @@ function Products() {
     const fetchData = async () => {
       try {
         const { data } = await request({
-          url: `/api/Product_details/Getall?userid=${searchParams.get("id")}`,
+          url: `/api/Clients/GetPagedProducts?userid=${searchParams.get(
+            "id"
+          )}&page=${page}&pageSize=${pageSize}`,
         });
-        setProducts(data);
+        console.log(data);
+        setProducts((prev) => [...prev, ...data.items]);
+        setHasMore(data.totalItems > data.currentPage * pageSize);
         setcategories([
           ...new Set(
-            data.map((product) => ({
+            data.items.map((product) => ({
               id: product.category_id,
               name: product.category_name_ar,
             }))
           ),
         ]);
-        extractAllBrands(data);
+        extractAllBrands(data.items);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
 
   // Fillteration
   // State to store filters
@@ -223,7 +230,7 @@ function Products() {
       }
 
       // Filter brands
-      const filteredBrands = category.brandsDto.filter((brand) => {
+      const filteredBrands = category.brandsDto1.filter((brand) => {
         const isBrandMatch =
           brand_id.length === 0 ||
           brand_id.some((id) => id === brand.brand_id.toString());
@@ -235,7 +242,7 @@ function Products() {
 
       // Filter products within each brand
       filteredBrands.forEach((brand) => {
-        brand.productDto = brand.productDto.filter((product) => {
+        brand.productDto1 = brand.productDto1.filter((product) => {
           // Check price range
           if (
             product.price < price_range.min ||
@@ -272,7 +279,7 @@ function Products() {
 
         // Sort products by date
         if (sort_order) {
-          brand.productDto.sort((a, b) => {
+          brand.productDto1.sort((a, b) => {
             const dateA = new Date(a.created_at);
             const dateB = new Date(b.created_at);
             return sort_order === "newest" ? dateB - dateA : dateA - dateB;
@@ -281,7 +288,7 @@ function Products() {
       });
 
       // Return category with filtered and sorted brands
-      category.brandsDto = filteredBrands;
+      category.brandsDto1 = filteredBrands;
       return category;
     });
 
@@ -355,10 +362,10 @@ function Products() {
             {filteredProducts.map((category) => (
               <Fragment key={category.category_id}>
                 <Fragment>
-                  {category.brandsDto.map((brand) => {
+                  {category.brandsDto1.map((brand) => {
                     return (
                       <Fragment key={brand.brand_id}>
-                        {brand.productDto.map((product) => {
+                        {brand.productDto1.map((product) => {
                           return (
                             <div
                               key={product.product_id}
@@ -432,12 +439,15 @@ function Products() {
               </Fragment>
             ))}
           </div>
-          <button
-            className="custom-link-ouline"
-            style={{ margin: "38px auto", padding: "12px 38px" }}
-          >
-            عرض المزيد
-          </button>
+          {hasMore && (
+            <button
+              className="custom-link-ouline"
+              style={{ margin: "38px auto", padding: "12px 38px" }}
+              onClick={() => setpage((prev) => prev + 1)}
+            >
+              عرض المزيد
+            </button>
+          )}
         </div>
         {/* Filters */}
         <div className="filters">
