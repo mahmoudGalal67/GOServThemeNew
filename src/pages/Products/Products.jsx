@@ -45,7 +45,7 @@ function Products() {
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 2;
 
-  const [categories, setcategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [brands, setbrands] = useState([]);
   // Extract all brands from all categories
   const extractAllBrands = (products) => {
@@ -144,10 +144,8 @@ function Products() {
             "id"
           )}&page=${page}&pageSize=${pageSize}`,
         });
-        console.log(data);
-        setProducts((prev) => [...prev, ...data.items]);
         setHasMore(data.totalItems > data.currentPage * pageSize);
-        setcategories([
+        setCategories([
           ...new Set(
             data.items.map((product) => ({
               id: product.category_id,
@@ -155,10 +153,63 @@ function Products() {
             }))
           ),
         ]);
+        setProducts((prevCategories) => {
+          return data.items.map((newCategory) => {
+            const existingCategory = prevCategories.find(
+              (cat) => cat.category_id === newCategory.category_id
+            );
+
+            if (existingCategory) {
+              const updatedBrands = newCategory.brandsDto1.map((newBrand) => {
+                const existingBrand = existingCategory.brandsDto1.find(
+                  (brand) => brand.brand_id === newBrand.brand_id
+                );
+
+                if (existingBrand) {
+                  // Merge products (productDto1) inside the brand
+                  const mergedProducts = [
+                    ...existingBrand.productDto1,
+                    ...newBrand.productDto1,
+                  ];
+
+                  return { ...existingBrand, productDto1: mergedProducts };
+                } else {
+                  return newBrand;
+                }
+              });
+
+              return { ...existingCategory, brandsDto1: updatedBrands };
+            } else {
+              return newCategory;
+            }
+          });
+        });
+        setHasMore(data.totalItems > data.currentPage * pageSize);
         extractAllBrands(data.items);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching categories:", error);
       }
+      // try {
+      //   const { data } = await request({
+      //     url: `/api/Clients/GetPagedProducts?userid=${searchParams.get(
+      //       "id"
+      //     )}&page=${page}&pageSize=${pageSize}`,
+      //   });
+      //   console.log(data);
+      //   setProducts((prev) => [...prev, ...data.items]);
+      //   setHasMore(data.totalItems > data.currentPage * pageSize);
+      //   setcategories([
+      //     ...new Set(
+      //       data.items.map((product) => ({
+      //         id: product.category_id,
+      //         name: product.category_name_ar,
+      //       }))
+      //     ),
+      //   ]);
+      //   extractAllBrands(data.items);
+      // } catch (error) {
+      //   console.error("Error fetching data:", error);
+      // }
     };
     fetchData();
   }, [page]);
@@ -169,6 +220,7 @@ function Products() {
     category_id: [], // For multiple selected categories
     brand_id: [], // For multiple selected brands
     color_name: [], // For multiple selected colors
+    reviews: [], // For multiple selected reviews
     price_range: { min: 0, max: 1000 }, // Price range with min and max
     search_text: searchParams.get("search") ? searchParams.get("search") : "", // For text search in product name/description
     sort_order: "newest", // Default sort order
@@ -206,7 +258,7 @@ function Products() {
       [name]: value,
     }));
   };
-
+  console.log(filters);
   // Filter function
   const filterProducts = () => {
     let filtered = JSON.parse(JSON.stringify(Products));
@@ -217,6 +269,7 @@ function Products() {
       price_range,
       search_text,
       sort_order,
+      reviews,
     } = filters;
 
     // First, globally filter products by the selected criteria
@@ -253,10 +306,17 @@ function Products() {
 
           // Check color filter
           if (color_name.length > 0) {
-            const colorMatch = product.product_colors.some((color) =>
+            const colorMatch = product.product_colors?.some((color) =>
               color_name.includes(color.hex_code)
             );
             if (!colorMatch) return false;
+          }
+          // Check review filter
+          if (reviews.length > 0) {
+            const reviewMatch = product.ratingDto?.some((rating) =>
+              reviews.includes(Number(rating.rating_number))
+            );
+            if (!reviewMatch) return false;
           }
 
           // Check search text
@@ -307,6 +367,7 @@ function Products() {
       category_id: [],
       brand_id: [],
       color_name: [],
+      reviews: [],
       price_range: { min: 0, max: 1000 },
       search_text: "",
       sort_order: "newest",
@@ -376,7 +437,7 @@ function Products() {
                               }
                             >
                               <img
-                                src={`https://salla111-001-site1.ptempurl.com/${product.photoes[0]}`}
+                                src={`https://salla1111-001-site1.ptempurl.com/${product.photoes[0]}`}
                                 alt=""
                                 style={{
                                   width: "280px",
@@ -554,19 +615,21 @@ function Products() {
               <Accordion.Header>التقييم</Accordion.Header>
               <Accordion.Body>
                 <div className="item">
-                  <span>(12)</span>
+                  <span></span>
                   <div>
                     {" "}
                     <label htmlFor="">الكل</label>
                     <Form.Check
-                      name="currency"
-                      type={"radio"}
-                      id={`الجوالات`}
+                      type={"checkbox"}
+                      id={5}
+                      value={5}
+                      onChange={handleCheckboxChange("reviews", Number(5))}
+                      checked={filters.reviews.includes(5)}
                     />
                   </div>
                 </div>
                 <div className="item">
-                  <span>(12)</span>
+                  <span></span>
                   <div>
                     {" "}
                     <label htmlFor="">
@@ -580,14 +643,16 @@ function Products() {
                       </div>
                     </label>
                     <Form.Check
-                      name="currency"
-                      type={"radio"}
-                      id={`الجوالات`}
+                      type={"checkbox"}
+                      id={4}
+                      value={4}
+                      onChange={handleCheckboxChange("reviews", Number(4))}
+                      checked={filters.reviews.includes(4)}
                     />
                   </div>
                 </div>
                 <div className="item">
-                  <span>(12)</span>
+                  <span></span>
                   <div>
                     <div className="rating flex">
                       <img src="outlineStar.svg" alt="" />
@@ -597,14 +662,16 @@ function Products() {
                       <img src="filledStar.svg" alt="" />
                     </div>
                     <Form.Check
-                      name="currency"
-                      type={"radio"}
-                      id={`الجوالات`}
+                      type={"checkbox"}
+                      id={3}
+                      value={3}
+                      onChange={handleCheckboxChange("reviews", Number(3))}
+                      checked={filters.reviews.includes(3)}
                     />
                   </div>
                 </div>
                 <div className="item">
-                  <span>(12)</span>
+                  <span></span>
                   <div>
                     <div className="rating flex">
                       <img src="outlineStar.svg" alt="" />
@@ -614,14 +681,16 @@ function Products() {
                       <img src="filledStar.svg" alt="" />
                     </div>
                     <Form.Check
-                      name="currency"
-                      type={"radio"}
-                      id={`الجوالات`}
+                      type={"checkbox"}
+                      id={2}
+                      value={2}
+                      onChange={handleCheckboxChange("reviews", Number(2))}
+                      checked={filters.reviews.includes(2)}
                     />
                   </div>
                 </div>
                 <div className="item">
-                  <span>(12)</span>
+                  <span></span>
                   <div>
                     <div className="rating flex">
                       <img src="outlineStar.svg" alt="" />
@@ -631,9 +700,11 @@ function Products() {
                       <img src="filledStar.svg" alt="" />
                     </div>
                     <Form.Check
-                      name="currency"
-                      type={"radio"}
-                      id={`الجوالات`}
+                      type={"checkbox"}
+                      id={1}
+                      value={1}
+                      onChange={handleCheckboxChange("reviews", Number(1))}
+                      checked={filters.reviews.includes(1)}
                     />
                   </div>
                 </div>

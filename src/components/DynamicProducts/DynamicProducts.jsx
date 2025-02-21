@@ -11,35 +11,54 @@ import "swiper/css/navigation";
 import "./DynamicProducts.css";
 import CartButton from "../CartButton/CartButton";
 import FavButton from "../FavButton/FavButton";
+import { Link, useSearchParams } from "react-router-dom";
+import Product from "../Product/Product";
 
-function DynamicProducts() {
+function DynamicProducts({ id }) {
+  let [searchParams, setSearchParams] = useSearchParams();
+
   const [DynamicProducts, setDynamicProducts] = useState([]);
   const [err, setErr] = useState(null);
 
   useEffect(() => {
-    const getDynamicProducts = async () => {
+    const fetchData = async () => {
       try {
         const { data } = await request({
-          url: "/api/dashboard/products",
+          url: `/api/Product_details/Getallfilter?catid=${id}`,
         });
         setDynamicProducts(data);
-        console.log(data);
       } catch (error) {
-        setErr(error.response?.data?.message);
-        console.log(error);
+        console.error("Error fetching data:", error);
       }
     };
-    getDynamicProducts();
+    fetchData();
   }, []);
+
+  if (DynamicProducts.length == 0) {
+    return (
+      <div style={{ padding: "45px", fontSize: "22px", textAlign: "center" }}>
+        {" "}
+        <span>No Products Found</span>
+      </div>
+    );
+  }
 
   if (err || !DynamicProducts) {
     return <span className="error">{err}</span>;
   }
   return (
     <section className="dynamic-products">
-      <div className="header">
-        <h2>وصل حديثا</h2>
-        <p>تسوق احدث المنتجات المميزة المضافة جديد</p>
+      <div className="header d-flex justify-content-around">
+        <Link to={`/products?id=${searchParams.get("id")}`}>
+          <button className="custom-link-ouline  btn btn-3 hover-border-3">
+            <img src="arrow.svg" alt="" />
+            <span> عرض الكل</span>
+          </button>
+        </Link>
+        <div>
+          <h2>{DynamicProducts[0].category_name_ar}</h2>
+          <p> {DynamicProducts[0].details_ar} </p>
+        </div>
       </div>
       <Swiper
         breakpoints={{
@@ -61,28 +80,40 @@ function DynamicProducts() {
         }}
         modules={[Navigation]}
       >
-        {DynamicProducts.map((product) => (
-          <SwiperSlide className="flex" key={product.id}>
-            <div className="product">
-              <img
-                src={`https://goservback.alyoumsa.com/public/storage/${product.photos[0]}`}
-                alt=""
-              />
-              <div className="title">{product.name.en}</div>
-              <p className="desc">{product.description.en}</p>
-              <p className="info">{product?.details.en} </p>
-              <div className="price-wrapper">
-                <div className="old">{product.price}</div>
-                <div className="new">{product?.price_after_discount}</div>
-              </div>
-              <div className="links-wrapper">
-                <FavButton />
-                <CartButton />
-              </div>
-              <div className="offer">خصم 25%</div>
-              <div className="special">جديد</div>
-            </div>
-          </SwiperSlide>
+        {DynamicProducts[0].brandsDto.map((brand) => (
+          <>
+            <span>{brand.brand_name}</span>
+            {brand?.productDto.map((product) => (
+              <SwiperSlide className="flex" key={product.product_id}>
+                <Product
+                  product={product}
+                  brand={brand}
+                  category={DynamicProducts[0]}
+                />
+                {/* <div className="product">
+                  <img
+                    src={`https://salla1111-001-site1.ptempurl.com/${product.photoes[0]}`}
+                    alt=""
+                  />
+                  <div className="title">{product.product_name_ar}</div>
+                  <p className="desc">{product.description_ar}</p>
+                  <p className="info">
+                    {product?.productDetailDto[0].details_ar}{" "}
+                  </p>
+                  <div className="price-wrapper">
+                    <div className="old">{product.price}</div>
+                    <div className="new">{product.price * 0.8}</div>
+                  </div>
+                  <div className="links-wrapper">
+                    <FavButton />
+                    <CartButton />
+                  </div>
+                  <div className="offer">خصم 25%</div>
+                  <div className="special">جديد</div>
+                </div> */}
+              </SwiperSlide>
+            ))}
+          </>
         ))}
       </Swiper>
     </section>

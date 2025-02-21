@@ -79,14 +79,12 @@ function Product({ product, brand, category, layout }) {
       key={product.product_id}
       className={layout === "column" ? "product column" : "product"}
       style={{
-        width: "200px",
-        height: "550px",
         padding: "12px",
         justifyContent: layout ? "space-around" : "",
       }}
     >
       <img
-        src={`https://salla111-001-site1.ptempurl.com/${product.photoes[0]}`}
+        src={`https://salla1111-001-site1.ptempurl.com/${product.photoes[0]}`}
         alt=""
         style={{
           width: "100%",

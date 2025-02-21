@@ -10,7 +10,9 @@ export const Search = ({ handleSearch }) => {
   const search = (e, name, value) => {
     if (e.key === "Enter" || e.keyCode === 13) {
       if ((location.pathname = "/")) {
-        navigate(`/products?search=${e.target.value}`);
+        navigate(
+          `/products?id=${searchParams.get("id")}&search=${e.target.value}`
+        );
       }
       handleSearch(name, value);
       window.scrollTo(0, 250);

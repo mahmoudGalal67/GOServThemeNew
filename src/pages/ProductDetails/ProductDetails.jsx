@@ -239,8 +239,8 @@ function ProductDetails() {
                           ProductColorID
                         ].photoes.map((img, i) => (
                           <ModalImage
-                            small={`https://salla111-001-site1.ptempurl.com/${img}`}
-                            large={`https://salla111-001-site1.ptempurl.com/${img}`}
+                            small={`https://salla1111-001-site1.ptempurl.com/${img}`}
+                            large={`https://salla1111-001-site1.ptempurl.com/${img}`}
                             alt={i}
                             key={i}
                           />
@@ -389,7 +389,7 @@ function ProductDetails() {
                 ref={sourceRef}
                 style={{ width: "100%" }}
                 src={
-                  `https://salla111-001-site1.ptempurl.com/${
+                  `https://salla1111-001-site1.ptempurl.com/${
                     ProductDetails.firstPhoto != undefined
                       ? ProductDetails?.firstPhoto
                       : ProductDetails?.photoes[0]
@@ -407,7 +407,7 @@ function ProductDetails() {
                   position: "absolute",
                 }}
                 src={
-                  `https://salla111-001-site1.ptempurl.com/${
+                  `https://salla1111-001-site1.ptempurl.com/${
                     ProductDetails.firstPhoto != undefined
                       ? ProductDetails?.firstPhoto
                       : ProductDetails?.photoes[0]
@@ -449,7 +449,7 @@ function ProductDetails() {
                         onClick={() => setFirstPhoto(i)}
                       >
                         <img
-                          src={`https://salla111-001-site1.ptempurl.com/${img}`}
+                          src={`https://salla1111-001-site1.ptempurl.com/${img}`}
                           alt=""
                         />
                       </div>

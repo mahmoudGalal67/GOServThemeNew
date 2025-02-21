@@ -25,6 +25,7 @@ import { request } from "../../components/utils/Request";
 import { useDispatch } from "react-redux";
 import { AuthContext } from "../../components/context/Auth";
 import { useCookies } from "react-cookie";
+import DynamicProducts from "../../components/DynamicProducts/DynamicProducts";
 
 function Home() {
   const [cookies, setCookie] = useCookies(["usertoken"]);
@@ -34,44 +35,6 @@ function Home() {
 
   const { user } = useContext(AuthContext);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    try {
-      const getCartItems = async () => {
-        const { data } = await request({
-          url: `/api/Clients/getorder_clientfirst?userid=${user.userId}`,
-          headers: {
-            Authorization: `Bearer  ${cookies.usertoken}`,
-          },
-        });
-        const userCart = data.find((item) => item.status == "بانتظار المراجعه");
-        const cartProducts = await Promise.all(
-          userCart.shopping_carddto.map(async (cart) => {
-            const { data: productDetails } = await request({
-              url: `api/Product_details/Getbyid?id=${cart.product_id}`,
-            });
-            return {
-              order_id: data[0].order_id,
-              product_id: productDetails[0].product_id,
-              price: productDetails[0].price,
-              photoes: productDetails[0].photoes,
-              shopping_cart_id: cart.shopping_cart_id,
-              product_name_ar: productDetails[0].product_name_ar,
-              product_name_en: productDetails[0].product_name_en,
-              quantity: cart.quantity,
-            };
-          })
-        );
-        dispatch(fetchCartItemms([...cartProducts]));
-      };
-      getCartItems();
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
 
   useEffect(() => {
     if (!user?.userId) {
@@ -148,20 +111,24 @@ function Home() {
       <Info />
       <Nav setSearchInput={setSearchInput} />
       <DynamicLinks />
-      <StaticProducts searchInput={searchInput} />
-      {/* <DynamicSlider /> */}
-      {/* <Features /> 
-       <StaticSlider />
+      <DynamicProducts id={1} />
+      <DynamicProducts id={2} />
+      {/* <StaticProducts searchInput={searchInput} /> */}
+      {/* <DynamicSlider />
+      <StaticSlider />
+      <DynamicSlider />
+      <DynamicSlider />
+      <Features />
       <SpecialProducts />
       <SPecialBanners />
       <CountdownProduct />
       <GlobalCountDown />
-      <Offers /> 
+      <Offers />
       <DynamicSlider number={2} />
-     <StaticSlider number={2} />
+      <StaticSlider number={2} />
       <Testimonials />
       <Blogs />
-      <Brands />  */}
+      <Brands /> */}
       {/* {sectionsOrder.map((item, i) => (
         <div key={i}>{item}</div>
       ))} */}

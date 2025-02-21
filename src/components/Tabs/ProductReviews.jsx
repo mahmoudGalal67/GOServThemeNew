@@ -9,6 +9,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/Auth";
 import { toast } from "react-toastify";
 
+import { formatDistanceToNow } from "date-fns";
+
 const reviews = [1, 2, 3, 4, 5];
 
 function ProductReviews({ ProductDetails }) {
@@ -22,9 +24,28 @@ function ProductReviews({ ProductDetails }) {
   const [comment, setComment] = useState("");
 
   const [productReview, setproductReview] = useState(ProductDetails.ratingDto);
-  console.log(productReview);
   const { id } = useParams();
 
+  function getTimeAgo(dateString) {
+    try {
+      if (!dateString || typeof dateString !== "string") {
+        throw new Error("Invalid date input");
+      }
+
+      // Remove extra precision from milliseconds and add 'Z' to ensure UTC format
+      const cleanedDateString = dateString.split(".")[0] + "Z";
+      const date = new Date(cleanedDateString);
+
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date format");
+      }
+
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch (error) {
+      console.error("Error parsing date:", error.message);
+      return "Invalid date";
+    }
+  }
   const addReview = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -145,7 +166,7 @@ function ProductReviews({ ProductDetails }) {
                     </div>
                   </div>
                   <div className="date mt-4 fw-medium">
-                    <p> {review.created_at} </p>
+                    <p> {getTimeAgo(review?.created_at)} </p>
                   </div>
                 </div>
 

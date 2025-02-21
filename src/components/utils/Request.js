@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://salla111-001-site1.ptempurl.com",
+  baseURL: "https://salla1111-001-site1.ptempurl.com",
 });
 
 export const request = ({ ...options }) => {
