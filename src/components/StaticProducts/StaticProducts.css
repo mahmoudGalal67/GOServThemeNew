@@ -2,6 +2,10 @@
   padding: 45px 2%;
 }
 
+.StaticProducts .category {
+  margin-right: auto;
+}
+
 .StaticProducts .headers {
   justify-content: space-between;
   margin-bottom: 45px;
@@ -42,7 +46,7 @@
 
 .StaticProducts .wrapper .product {
   position: relative;
-  min-width: 280px;
+  width: 280px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -53,7 +57,7 @@
 }
 
 .StaticProducts .wrapper .product > img {
-  width: 100%;
+  width: 280px;
   height: 50%;
   object-fit: cover;
 }

@@ -112,8 +112,7 @@ function Home() {
       <Nav setSearchInput={setSearchInput} />
       <DynamicLinks />
       <DynamicProducts id={1} />
-      <DynamicProducts id={2} />
-      {/* <StaticProducts searchInput={searchInput} /> */}
+      <StaticProducts searchInput={searchInput} />
       {/* <DynamicSlider />
       <StaticSlider />
       <DynamicSlider />

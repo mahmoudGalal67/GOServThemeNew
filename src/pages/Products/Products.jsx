@@ -52,11 +52,11 @@ function Products() {
     const brandsArray = [];
 
     products.forEach((category) => {
-      category.brandsDto1.forEach((brand) => {
+      category.brandsDto?.forEach((brand) => {
         brandsArray.push({
           brand_id: brand.brand_id,
           brand_name: brand.brand_name,
-          brand_lenght: brand.productDto1.length,
+          brand_lenght: brand.productDto.length,
         });
       });
     });
@@ -160,25 +160,25 @@ function Products() {
             );
 
             if (existingCategory) {
-              const updatedBrands = newCategory.brandsDto1.map((newBrand) => {
-                const existingBrand = existingCategory.brandsDto1.find(
+              const updatedBrands = newCategory.brandsDto?.map((newBrand) => {
+                const existingBrand = existingCategory.brandsDto.find(
                   (brand) => brand.brand_id === newBrand.brand_id
                 );
 
                 if (existingBrand) {
-                  // Merge products (productDto1) inside the brand
+                  // Merge products (productDto) inside the brand
                   const mergedProducts = [
-                    ...existingBrand.productDto1,
-                    ...newBrand.productDto1,
+                    ...existingBrand.productDto,
+                    ...newBrand.productDto,
                   ];
 
-                  return { ...existingBrand, productDto1: mergedProducts };
+                  return { ...existingBrand, productDto: mergedProducts };
                 } else {
                   return newBrand;
                 }
               });
 
-              return { ...existingCategory, brandsDto1: updatedBrands };
+              return { ...existingCategory, brandsDto: updatedBrands };
             } else {
               return newCategory;
             }
@@ -213,7 +213,7 @@ function Products() {
     };
     fetchData();
   }, [page]);
-
+  console.log(products);
   // Fillteration
   // State to store filters
   const [filters, setFilters] = useState({
@@ -258,7 +258,6 @@ function Products() {
       [name]: value,
     }));
   };
-  console.log(filters);
   // Filter function
   const filterProducts = () => {
     let filtered = JSON.parse(JSON.stringify(Products));
@@ -283,7 +282,7 @@ function Products() {
       }
 
       // Filter brands
-      const filteredBrands = category.brandsDto1.filter((brand) => {
+      const filteredBrands = category.brandsDto?.filter((brand) => {
         const isBrandMatch =
           brand_id.length === 0 ||
           brand_id.some((id) => id === brand.brand_id.toString());
@@ -291,11 +290,11 @@ function Products() {
       });
 
       // Skip categories with no matching brands
-      if (filteredBrands.length === 0) return null;
+      if (filteredBrands?.length === 0) return null;
 
       // Filter products within each brand
-      filteredBrands.forEach((brand) => {
-        brand.productDto1 = brand.productDto1.filter((product) => {
+      filteredBrands?.forEach((brand) => {
+        brand.productDto = brand.productDto.filter((product) => {
           // Check price range
           if (
             product.price < price_range.min ||
@@ -339,7 +338,7 @@ function Products() {
 
         // Sort products by date
         if (sort_order) {
-          brand.productDto1.sort((a, b) => {
+          brand.productDto.sort((a, b) => {
             const dateA = new Date(a.created_at);
             const dateB = new Date(b.created_at);
             return sort_order === "newest" ? dateB - dateA : dateA - dateB;
@@ -348,7 +347,7 @@ function Products() {
       });
 
       // Return category with filtered and sorted brands
-      category.brandsDto1 = filteredBrands;
+      category.brandsDto = filteredBrands;
       return category;
     });
 
@@ -357,7 +356,7 @@ function Products() {
 
     return filtered;
   };
-
+  console.log(filters);
   // Get the filtered products
   let filteredProducts = filterProducts();
   // Fillteration
@@ -423,10 +422,10 @@ function Products() {
             {filteredProducts.map((category) => (
               <Fragment key={category.category_id}>
                 <Fragment>
-                  {category.brandsDto1.map((brand) => {
+                  {category?.brandsDto?.map((brand) => {
                     return (
                       <Fragment key={brand.brand_id}>
-                        {brand.productDto1.map((product) => {
+                        {brand.productDto.map((product) => {
                           return (
                             <div
                               key={product.product_id}

@@ -27,6 +27,7 @@ function NavBar({ design, handleSearch }) {
   let [searchParams, setSearchParams] = useSearchParams();
   const logoOut = () => {
     removeCookie("user", { path: "/" });
+    localStorage.removeItem("user");
     dispatch({ type: "logout" });
     toast.info("You have been logged out successfully");
   };

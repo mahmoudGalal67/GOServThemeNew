@@ -49,12 +49,12 @@ function DynamicProducts({ id }) {
   return (
     <section className="dynamic-products">
       <div className="header d-flex justify-content-around">
-        <Link to={`/products?id=${searchParams.get("id")}`}>
+        {/* <Link to={`/products?id=${searchParams.get("id")}`}>
           <button className="custom-link-ouline  btn btn-3 hover-border-3">
             <img src="arrow.svg" alt="" />
             <span> عرض الكل</span>
           </button>
-        </Link>
+        </Link> */}
         <div>
           <h2>{DynamicProducts[0].category_name_ar}</h2>
           <p> {DynamicProducts[0].details_ar} </p>
