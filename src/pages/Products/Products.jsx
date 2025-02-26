@@ -139,53 +139,67 @@ function Products() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // const { data } = await request({
+        //   url: `/api/Clients/GetPagedProducts?userid=${searchParams.get(
+        //     "id"
+        //   )}&page=${page}&pageSize=${pageSize}`,
+        // });
         const { data } = await request({
-          url: `/api/Clients/GetPagedProducts?userid=${searchParams.get(
-            "id"
-          )}&page=${page}&pageSize=${pageSize}`,
+          url: `/api/Clients/Getall?userid=${searchParams.get("id")}`,
         });
-        setHasMore(data.totalItems > data.currentPage * pageSize);
+        // setHasMore(data.totalItems > data.currentPage * pageSize);
+        // setCategories([
+        //   ...new Set(
+        //     data.items.map((product) => ({
+        //       id: product.category_id,
+        //       name: product.category_name_ar,
+        //     }))
+        //   ),
+        // ]);
         setCategories([
           ...new Set(
-            data.items.map((product) => ({
+            data.map((product) => ({
               id: product.category_id,
               name: product.category_name_ar,
             }))
           ),
         ]);
-        setProducts((prevCategories) => {
-          return data.items.map((newCategory) => {
-            const existingCategory = prevCategories.find(
-              (cat) => cat.category_id === newCategory.category_id
-            );
+        // setProducts((prevCategories) => {
+        //   return data.items.map((newCategory) => {
+        //     const existingCategory = prevCategories.find(
+        //       (cat) => cat.category_id === newCategory.category_id
+        //     );
 
-            if (existingCategory) {
-              const updatedBrands = newCategory.brandsDto?.map((newBrand) => {
-                const existingBrand = existingCategory.brandsDto.find(
-                  (brand) => brand.brand_id === newBrand.brand_id
-                );
+        //     if (existingCategory) {
+        //       const updatedBrands = newCategory.brandsDto?.map((newBrand) => {
+        //         const existingBrand = existingCategory.brandsDto.find(
+        //           (brand) => brand.brand_id === newBrand.brand_id
+        //         );
 
-                if (existingBrand) {
-                  // Merge products (productDto) inside the brand
-                  const mergedProducts = [
-                    ...existingBrand.productDto,
-                    ...newBrand.productDto,
-                  ];
+        //         if (existingBrand) {
+        //           // Merge products (productDto) inside the brand
+        //           const mergedProducts = [
+        //             ...existingBrand.productDto,
+        //             ...newBrand.productDto,
+        //           ];
 
-                  return { ...existingBrand, productDto: mergedProducts };
-                } else {
-                  return newBrand;
-                }
-              });
+        //           return { ...existingBrand, productDto: mergedProducts };
+        //         } else {
+        //           return newBrand;
+        //         }
+        //       });
 
-              return { ...existingCategory, brandsDto: updatedBrands };
-            } else {
-              return newCategory;
-            }
-          });
-        });
-        setHasMore(data.totalItems > data.currentPage * pageSize);
-        extractAllBrands(data.items);
+        //       return { ...existingCategory, brandsDto: updatedBrands };
+        //     } else {
+        //       return newCategory;
+        //     }
+        //   });
+        // });
+        setProducts(data);
+
+        // setHasMore(data.totalItems > data.currentPage * pageSize);
+        // extractAllBrands(data.items);
+        extractAllBrands(data);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -499,7 +513,7 @@ function Products() {
               </Fragment>
             ))}
           </div>
-          {hasMore && (
+          {/* {hasMore && (
             <button
               className="custom-link-ouline"
               style={{ margin: "38px auto", padding: "12px 38px" }}
@@ -507,7 +521,7 @@ function Products() {
             >
               عرض المزيد
             </button>
-          )}
+          )} */}
         </div>
         {/* Filters */}
         <div className="filters">
