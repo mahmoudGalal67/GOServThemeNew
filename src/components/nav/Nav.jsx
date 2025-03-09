@@ -31,6 +31,7 @@ function NavBar({ design, handleSearch }) {
     dispatch({ type: "logout" });
     toast.info("You have been logged out successfully");
   };
+  console.log("test");
 
   return (
     <>
